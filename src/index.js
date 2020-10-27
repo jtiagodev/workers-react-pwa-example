@@ -6,11 +6,109 @@
  *  LICENSE file in the root directory of this source tree. An additional grant
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 
-class HelloMessage extends React.Component {
+const MyAccelerator = (props) => {
+  const [sensor, setSensor] = useState("STARTING");
+
+  useEffect(() => {
+    console.log("SETTING UP ACCEL");
+    navigator.permissions.query({ name: "accelerometer" }).then((result) => {
+      if (result.state === "denied") {
+        console.log("Permission to use accelerometer sensor is denied.");
+        return;
+      }
+      // Use the sensor.
+      try {
+        const accel = new Accelerometer({ referenceFrame: "device" });
+        accel.addEventListener("error", (event) => {
+          // Handle runtime errors.
+          if (event.error.name === "NotAllowedError") {
+            // Branch to code for requesting permission.
+            setSensor("NotAllowedError");
+          } else if (event.error.name === "NotReadableError") {
+            console.log("Cannot connect to the sensor.");
+            setSensor("Cannot connect to the sensor.");
+          } else {
+            setSensor("GENERIC ERROR");
+          }
+        });
+        accel.addEventListener("reading", (evt) => {
+          setSensor("READING");
+        });
+        accel.start();
+      } catch (error) {
+        // Handle construction errors.
+        if (error.name === "SecurityError") {
+          // See the note above about feature policy.
+          console.log("Sensor construction was blocked by a feature policy.");
+          setSensor("Sensor construction was blocked by a feature policy.");
+        } else if (error.name === "ReferenceError") {
+          console.log("Sensor is not supported by the User Agent.");
+          setSensor("Sensor is not supported by the User Agent.");
+        } else {
+          setSensor("CATCH ERROR BLOCK");
+        }
+        // throw error;
+      }
+    });
+  }, []);
+
+  return <span>{`ACCELEROMETER ${sensor}`}</span>;
+};
+
+const header = `<!DOCTYPE html>
+ <html lang="en">
+   <title>Cloudflare Workers React PWA Example</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <style>
+   #app {
+   text-align: center;
+ }
+ body {
+   margin: 0px;
+ }
+ .Workers-Logo {
+   margin-right:20px;
+   height: 100px;
+  }
+ 
+ .React-Logo {
+   height: 100px;
+  }
+ 
+ .App-header {
+   background-color: #282c34;
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   font-size: calc(10px + 2vmin);
+   color: white;
+ }
+ .App-header-title {
+   font-size: xx-large;
+   display: flex;
+   align-items: center;
+   font-weight: 600;
+ }
+ .App-header img {
+     height: 100px;
+ }
+ .App-link {
+   color: #61dafb;
+ }
+   </style>
+   <body>
+     <div id="app">`;
+
+const footer = `</div>
+ </body>
+ </html>`;
+
+class Sample extends React.Component {
   render() {
     return (
       <div className="App-header">
@@ -68,7 +166,7 @@ class HelloMessage extends React.Component {
         <div>
           <p>
             Edit <code>src/index.js</code> and save, <code>yarn preview</code>{" "}
-            to reload.
+            to reload
           </p>
           <a
             className="App-link"
@@ -76,66 +174,17 @@ class HelloMessage extends React.Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn about Cloudflare Workers
+            Go Learn Workers
           </a>
         </div>
       </div>
     );
   }
 }
-const header = `<!DOCTYPE html>
-<html lang="en">
-  <title>Cloudflare Workers React PWA Example</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-  #app {
-  text-align: center;
-}
-body {
-  margin: 0px;
-}
-.Workers-Logo {
-  margin-right:20px;
-  height: 100px;
- }
 
-.React-Logo {
-  height: 100px;
- }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-.App-header-title {
-  font-size: xx-large;
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-}
-.App-header img {
-    height: 100px;
-}
-.App-link {
-  color: #61dafb;
-}
-  </style>
-  <body>
-    <div id="app">`;
-
-const footer = `</div>
-<script src="/worker.js"></script>
-</body>
-</html>`;
-
-let routes = {
-  "/": <HelloMessage />
+const routes = {
+  "/": <Sample />,
+  "/a": <MyAccelerator />,
 };
 
 async function handleRequest(event) {
@@ -144,8 +193,8 @@ async function handleRequest(event) {
     let rendered = ReactDOMServer.renderToString(routes[u.pathname]);
     return new Response(header + rendered + footer, {
       headers: {
-        "Content-Type": "text/html"
-      }
+        "Content-Type": "text/html",
+      },
     });
   }
   let cache = await caches.open("sevki-react");
@@ -159,24 +208,25 @@ async function handleRequest(event) {
   return response;
 }
 
-self.addEventListener("fetch", event => {
+self.addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event));
+  console.log(event);
 });
 
 if (typeof navigator !== "undefined") {
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
+    window.addEventListener("load", function () {
       const app = document.querySelector("#app");
       ReactDOM.hydrate(routes[location.pathname], app);
       navigator.serviceWorker.register("/worker.js").then(
-        function(registration) {
+        function (registration) {
           // Registration was successful
           console.log(
             "ServiceWorker registration successful with scope: ",
             registration.scope
           );
         },
-        function(err) {
+        function (err) {
           // registration failed :(
           console.log("ServiceWorker registration failed: ", err);
         }
