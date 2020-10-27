@@ -7,7 +7,7 @@ const opn = require("opn");
 async function deploy(script) {
   let resp = await fetch(
     "https://api.cloudflare.com/client/v4/accounts" +
-      node.env.CLOUDFLARE_ZONE +
+      node.env.CLOUDFLARE_ACCOUNTID +
       "/workers/scripts/" +
       node.env.CLOUDFLARE_SCRIPT,
     {

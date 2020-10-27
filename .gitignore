@@ -1,3 +1,11 @@
 node_modules
 dist/
 .DS_Store
+
+# sensi
+storage.json
+vars.tf
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+scripts/.env

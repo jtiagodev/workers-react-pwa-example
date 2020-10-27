@@ -1,0 +1,10 @@
+{
+  "registry.terraform.io/cloudflare/cloudflare": {
+    "hash": "h1:DAevHnLZn38YPTP7uodDE97r/OBXMwghg4FyhlTaOdA=",
+    "version": "2.12.0"
+  },
+  "registry.terraform.io/hashicorp/google": {
+    "hash": "h1:1K5NIj3MmUDkvAyQsOenOGuAyXEKsfXy1Z7mqMJ2wkw=",
+    "version": "3.44.0"
+  }
+}

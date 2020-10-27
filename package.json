@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "webpack -p",
+    "build": "webpack",
     "terraform": "yarn build && terraform apply -auto-approve",
     "deploy": "yarn build && node ./scripts/deploy.js",
     "preview": "yarn build && node ./scripts/open-preview.js"
@@ -26,6 +26,6 @@
     "react-dom": "^16.6.1",
     "react-dom-server": "^0.0.5",
     "webpack": "^4.10.2",
-    "webpack-cli": "^2.1.4"
+    "webpack-cli": "^4.1.0"
   }
 }
