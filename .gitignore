@@ -3,9 +3,9 @@ dist/
 .DS_Store
 
 # sensi
+.env
 storage.json
 vars.tf
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfvars
-scripts/.env
