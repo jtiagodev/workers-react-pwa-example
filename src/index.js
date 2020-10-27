@@ -7,9 +7,30 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
+import axios from 'axios';
 
+const COVIDTest = (prop) => {
+  const [data, setData] = useState(undefined);
+  const [load, setLoad] = useState(true);
+
+  useEffect(() => {
+    axios.get('https://corona.lmao.ninja/v2/all?yesterday=true')
+    .then(result => {
+      setData(result.data);
+    })
+    .catch(err => console.warr(err))
+    setLoad(false);
+
+  }, []);
+
+  if (load) {
+    return <span>Loading..</span>
+  }
+  
+  return <span>{`total cases: ${data.cases}`}</span>
+};
 class HelloMessage extends React.Component {
   render() {
     return (
@@ -135,7 +156,8 @@ const footer = `</div>
 </html>`;
 
 let routes = {
-  "/": <HelloMessage />
+  "/": <HelloMessage />,
+  "/c": <COVIDTest />
 };
 
 async function handleRequest(event) {
