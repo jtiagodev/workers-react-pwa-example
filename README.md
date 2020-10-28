@@ -10,7 +10,10 @@ same React code you would on the browser on Cloudflare Workers.
 
 ### Instructions
 
-- `yarn preview`
+- `npm install`
+- (send worker to GCP) `npm run terraform`
+- `npm run deploy`
+- (optional) `npm run preview`
 
 #### Static hosting
 In order for this application to work, you'll have to be able to serve `/worker.js` from your own origin. 
@@ -24,30 +27,43 @@ vars file with the following variables
 
 ```hcl
 # Cloudflare variables
+variable "CLOUDFLARE_ACCOUNT_ID" {
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+}
+
 variable "cloudflare_email" {
-  default = "dmr@bell-labs.com"
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
 variable "cloudflare_token" {
-  default = "00000000000000000000000000"
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
 # GCP exmaple variables
 variable "project" {
-  default = "my-project"
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
 variable "zone" {
-  default = "buzzwords.app"
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
 variable "bucket" {
-  default = "buzzwords"
+  default = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 ```
+
 after adding this file as `vars.tf` (terraform will pickup any `.tf` extension file) do
 `terraform init` and `terraform apply`
 
+And create a .env in the project root with the following:
+
+```
+CLOUDFLARE_SCRIPT=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CLOUDFLARE_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CLOUDFLARE_EMAIL=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CLOUDFLARE_ACCOUNTID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
 
 ### About
 [Cloudflare Workers](http://developers.cloudflare.com/workers/) allow you to write JavaScript which runs on all of Cloudflare's
